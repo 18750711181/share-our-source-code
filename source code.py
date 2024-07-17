@@ -75,9 +75,9 @@ def search_keywords_in_excel_folder(folder_path, keywords, output_file):
 
     output_workbook.save(output_file)
 
-folder_path = os.path.join(base_path,"源文件")
+folder_path = os.path.join(base_path,"source file")
 keywords_to_search = [f"{original_word}",f"{replacement_word}"]
-output_file = os.path.join(base_path,"后续处理",f"{original_word}.xlsx")
+output_file = os.path.join(base_path,"subsequent processing",f"{original_word}.xlsx")
 
 search_keywords_in_excel_folder(folder_path, keywords_to_search, output_file)
 
@@ -89,7 +89,7 @@ source_df = pd.read_excel(source_file, header=None)
 row_to_copy = source_df.iloc[0]
 
 
-target_file = os.path.join(base_path, "后续处理", f"{original_word}.xlsx")  # 目标文件路径
+target_file = os.path.join(base_path, "subsequent processing", f"{original_word}.xlsx")  # param path 
 target_wb = load_workbook(target_file)
 target_sheet = target_wb.active
 
@@ -103,18 +103,18 @@ for r_idx, row in enumerate(rows_to_insert, 1):
         target_sheet.cell(row=1, column=c_idx, value=value)
 
 
-temp_target_file = os.path.join(base_path, "后续处理", f"temp_{original_word}.xlsx")
+temp_target_file = os.path.join(base_path, "subsequent processing", f"temp_{original_word}.xlsx")
 target_wb.save(temp_target_file)
 
 
 target_df = pd.read_excel(temp_target_file)
 
 
-column_to_replace = 'medicinalproduct'  # 在'medicinalproduct'列进行替换
+column_to_replace = 'medicinalproduct'  # replace in the 'medicinalproduct' column
 target_df[column_to_replace] = target_df[column_to_replace].replace(f'{replacement_word}', f'{original_word}', regex=True)
 
-final_target_file = os.path.join(base_path, "后续处理", f"{original_word}-统一关键词和格式更新.xlsx")
-target_df.to_excel(final_target_file, index=False)  # 保存到新文件
+final_target_file = os.path.join(base_path, "subsequent processing", f"{original_word}-unified keyword and format updates.xlsx")
+target_df.to_excel(final_target_file, index=False)  # save to new file
 
 os.remove(temp_target_file)
 
@@ -153,7 +153,7 @@ def extract_data(row):
 
 df['drugcharacterization'] = df.apply(extract_data, axis=1)
 
-output_file_path = os.path.join(base_path,"后续处理", f"{original_word}-123.xlsx")
+output_file_path = os.path.join(base_path,"subsequent processing", f"{original_word}-123.xlsx")
 df.to_excel(output_file_path, index=False)
 
 
@@ -163,21 +163,21 @@ df = pd.read_excel(output_file_path)
 
 df = df[df['drugcharacterization'].isin([2, 3]) == False]
 
-new_directory = os.path.join(base_path, "后续处理", "小包厢")
+new_directory = os.path.join(base_path, "subsequent processing", "new folder")
 os.makedirs(new_directory, exist_ok=True)
-new_output_file_path = os.path.join(new_directory, f"{original_word}-保留1.xlsx")
+new_output_file_path = os.path.join(new_directory, f"{original_word}-save 1.xlsx")
 
 df.to_excel(new_output_file_path, index=False)
 
 
 
-def 处理Excel文件(file_path, english_pt_dict, matched_pt_set, pt_occurrence_count, matched_pt_list):
-    df_dake = pd.read_excel(file_path, engine='openpyxl')  # 指定使用openpyxl引擎读取Excel文件
-    print(f"处理文件：{file_path}")
+def handle Excel file(file_path, english_pt_dict, matched_pt_set, pt_occurrence_count, matched_pt_list):
+    df_dake = pd.read_excel(file_path, engine='openpyxl')  # specifies the use of the openpyxl engine to read Excel file
+    print(f"handle file：{file_path}")
 
     for index, row in df_dake.iterrows():
         reaction = row['reactionmeddrapt']
-        print(f"处理第 {index + 1} 行，不良反应：{reaction}")
+        print(f"handle the {index + 1} line，adverse reaction：{reaction}")
 
         if '[' not in reaction and ']' not in reaction:
             reaction = f"['{reaction}']"
@@ -191,14 +191,14 @@ def 处理Excel文件(file_path, english_pt_dict, matched_pt_set, pt_occurrence_
         for r in reaction_cleaned:
             if r in english_pt_dict:
                 matched_pt = english_pt_dict[r]
-                添加匹配的PT(matched_pt, matched_pt_set, pt_occurrence_count, matched_pt_list, matched_pt_row)
+                add matchedPT(matched_pt, matched_pt_set, pt_occurrence_count, matched_pt_list, matched_pt_row)
             else:
-                print(f"未找到匹配项：{r}")
+                print(f"no match was found：{r}")
 
 
-def 添加匹配的PT(pt, matched_pt_set, pt_occurrence_count, matched_pt_list, matched_pt_row):
+def add matchedPT(pt, matched_pt_set, pt_occurrence_count, matched_pt_list, matched_pt_row):
     if pt not in matched_pt_set:
-        print(f"匹配成功：{pt}")
+        print(f"match successfully：{pt}")
         matched_pt_set.add(pt)
 
     if pt not in matched_pt_row:
@@ -210,7 +210,7 @@ def 添加匹配的PT(pt, matched_pt_set, pt_occurrence_count, matched_pt_list, 
             matched_pt_list.append(pt)
 
 
-df_pt = pd.read_excel(os.path.join(base_path,'PT匹配.xlsx'))
+df_pt = pd.read_excel(os.path.join(base_path,'PTmatch.xlsx'))
 english_pt_dict = {}
 for _, row in df_pt.iterrows():
     english = row['English']
@@ -227,29 +227,29 @@ matched_pt_list = []
 folder_path = new_directory
 for root, _, files in os.walk(folder_path):
     for file in files:
-        if file.endswith('.xlsx') and file != 'PT匹配.xlsx':
+        if file.endswith('.xlsx') and file != 'PTmatch.xlsx':
             file_path = os.path.join(root, file)
-            处理Excel文件(file_path, english_pt_dict, matched_pt_set, pt_occurrence_count, matched_pt_list)
+            handle Excel file(file_path, english_pt_dict, matched_pt_set, pt_occurrence_count, matched_pt_list)
 
 
-result_df = pd.DataFrame({'匹配成功的PT': list(matched_pt_set)})
-with pd.ExcelWriter(os.path.join(base_path,"后续处理",f'{original_word}-PT汇总结果.xlsx'), engine='openpyxl') as writer:
-    result_df.to_excel(writer, sheet_name='匹配结果', index=False)
+result_df = pd.DataFrame({'match successfully PT': list(matched_pt_set)})
+with pd.ExcelWriter(os.path.join(base_path,"subsequent processing",f'{original_word}-PTsummarized result.xlsx'), engine='openpyxl') as writer:
+    result_df.to_excel(writer, sheet_name='match result', index=False)
 
 
-count_df = pd.DataFrame(list(pt_occurrence_count.items()), columns=['PT', '出现次数'])
-with pd.ExcelWriter(os.path.join(base_path,"后续处理",f'{original_word}-PT汇总结果.xlsx'), engine='openpyxl', mode='a') as writer:
-    count_df.to_excel(writer, sheet_name='PT出现次数统计', index=False)
-
-
-
+count_df = pd.DataFrame(list(pt_occurrence_count.items()), columns=['PT', 'occurrence number'])
+with pd.ExcelWriter(os.path.join(base_path,"subsequent processing",f'{original_word}-PTsummarized result.xlsx'), engine='openpyxl', mode='a') as writer:
+    count_df.to_excel(writer, sheet_name='PToccurrence number statistics', index=False)
 
 
 
 
 
-def 处理Excel文件(file_path, english_soc_dict, matched_soc_set, soc_occurrence_count, matched_soc_list):
-    df_dake = pd.read_excel(file_path, engine='openpyxl')  # 指定使用openpyxl引擎读取Excel文件
+
+
+
+def handle Excel file(file_path, english_soc_dict, matched_soc_set, soc_occurrence_count, matched_soc_list):
+    df_dake = pd.read_excel(file_path, engine='openpyxl')  # specifies the use of the openpyxl engine to read Excel file
 
 
     for index, row in df_dake.iterrows():
@@ -270,15 +270,15 @@ def 处理Excel文件(file_path, english_soc_dict, matched_soc_set, soc_occurren
         for r in reaction_cleaned:
             if r in english_soc_dict:
                 matched_soc = english_soc_dict[r]
-                添加匹配的SOC(matched_soc, matched_soc_set, soc_occurrence_count, matched_soc_list, matched_soc_row)
+                add matchedSOC(matched_soc, matched_soc_set, soc_occurrence_count, matched_soc_list, matched_soc_row)
             else:
                 print(1)
 
 
 
-def 添加匹配的SOC(soc, matched_soc_set, soc_occurrence_count, matched_soc_list, matched_soc_row):
+def add matchedSOC(soc, matched_soc_set, soc_occurrence_count, matched_soc_list, matched_soc_row):
     if soc not in matched_soc_set:
-        print(f"匹配成功：{soc}")
+        print(f"match successfully：{soc}")
         matched_soc_set.add(soc)
 
     if soc not in matched_soc_row:
@@ -306,27 +306,27 @@ matched_soc_list = []
 folder_path = new_directory
 for root, _, files in os.walk(folder_path):
     for file in files:
-        if file.endswith('.xlsx') and file != 'SOC匹配.xlsx':
+        if file.endswith('.xlsx') and file != 'SOCmatch.xlsx':
             file_path = os.path.join(root, file)
-            处理Excel文件(file_path, english_soc_dict, matched_soc_set, soc_occurrence_count, matched_soc_list)
+            handle Excel file(file_path, english_soc_dict, matched_soc_set, soc_occurrence_count, matched_soc_list)
 
 
-result_df = pd.DataFrame({'匹配成功的SOC': list(matched_soc_set)})
-with pd.ExcelWriter(os.path.join(base_path,"后续处理", f'{original_word}-SOC汇总结果.xlsx'), engine='openpyxl') as writer:
-    result_df.to_excel(writer, sheet_name='匹配结果', index=False)
+result_df = pd.DataFrame({'match successfully SOC': list(matched_soc_set)})
+with pd.ExcelWriter(os.path.join(base_path,"subsequent processing", f'{original_word}-SOCsummarized result.xlsx'), engine='openpyxl') as writer:
+    result_df.to_excel(writer, sheet_name='match result', index=False)
 
 
-count_df = pd.DataFrame(list(soc_occurrence_count.items()), columns=['SOC', '出现次数'])
-with pd.ExcelWriter(os.path.join(base_path,"后续处理", f'{original_word}-SOC汇总结果.xlsx'), engine='openpyxl', mode='a') as writer:
-    count_df.to_excel(writer, sheet_name='SOC出现次数统计', index=False)
+count_df = pd.DataFrame(list(soc_occurrence_count.items()), columns=['SOC', 'occurrence number'])
+with pd.ExcelWriter(os.path.join(base_path,"subsequent processing", f'{original_word}-SOCsummarized result.xlsx'), engine='openpyxl', mode='a') as writer:
+    count_df.to_excel(writer, sheet_name='SOCoccurrence number statistics', index=False)
 
 
 
 
 
-def 处理Excel文件(file_path, english_pt_dict, matched_pt_set, pt_occurrence_count, matched_pt_list):
-    df_dake = pd.read_excel(file_path, engine='openpyxl')  # 指定使用openpyxl引擎读取Excel文件
-    print(f"处理文件：{file_path}")
+def handle Excel file(file_path, english_pt_dict, matched_pt_set, pt_occurrence_count, matched_pt_list):
+    df_dake = pd.read_excel(file_path, engine='openpyxl')  # specifies the use of the openpyxl engine to read Excel file
+    print(f"handle file：{file_path}")
 
     for index, row in df_dake.iterrows():
         reaction = row['reactionmeddrapt']
@@ -347,14 +347,14 @@ def 处理Excel文件(file_path, english_pt_dict, matched_pt_set, pt_occurrence_
         for r in reaction_cleaned:
             if r in english_pt_dict:
                 matched_pt = english_pt_dict[r]
-                添加匹配的PT(matched_pt, matched_pt_set, pt_occurrence_count, matched_pt_list, matched_pt_row)
+                add matchedPT(matched_pt, matched_pt_set, pt_occurrence_count, matched_pt_list, matched_pt_row)
             else:
-                print(f"未找到匹配项：{r}")
+                print(f"no match was found：{r}")
 
 
-def 添加匹配的PT(pt, matched_pt_set, pt_occurrence_count, matched_pt_list, matched_pt_row):
+def add matchedPT(pt, matched_pt_set, pt_occurrence_count, matched_pt_list, matched_pt_row):
     if pt not in matched_pt_set:
-        print(f"匹配成功：{pt}")
+        print(f"match successfully：{pt}")
         matched_pt_set.add(pt)
 
     if pt not in matched_pt_row:
@@ -366,7 +366,7 @@ def 添加匹配的PT(pt, matched_pt_set, pt_occurrence_count, matched_pt_list, 
             matched_pt_list.append(pt)
 
 
-df_pt = pd.read_excel(os.path.join(base_path,'PT匹配.xlsx'))
+df_pt = pd.read_excel(os.path.join(base_path,'PTmatch.xlsx'))
 english_pt_dict = {}
 for _, row in df_pt.iterrows():
     english = row['English']
@@ -380,34 +380,34 @@ pt_occurrence_count = {}
 matched_pt_list = []
 
 
-folder_path = os.path.join(base_path,"源文件")
+folder_path = os.path.join(base_path,"source file")
 for root, _, files in os.walk(folder_path):
     for file in files:
-        if file.endswith('.xlsx') and file != 'PT匹配.xlsx':
+        if file.endswith('.xlsx') and file != 'PTmatch.xlsx':
             file_path = os.path.join(root, file)
-            处理Excel文件(file_path, english_pt_dict, matched_pt_set, pt_occurrence_count, matched_pt_list)
+            handle Excel file(file_path, english_pt_dict, matched_pt_set, pt_occurrence_count, matched_pt_list)
 
 
-result_df = pd.DataFrame({'匹配成功的PT': list(matched_pt_set)})
-with pd.ExcelWriter(os.path.join(base_path,'PT汇总结果.xlsx'), engine='openpyxl') as writer:
-    result_df.to_excel(writer, sheet_name='匹配结果', index=False)
+result_df = pd.DataFrame({'match successfully PT': list(matched_pt_set)})
+with pd.ExcelWriter(os.path.join(base_path,'PTsummarized result.xlsx'), engine='openpyxl') as writer:
+    result_df.to_excel(writer, sheet_name='match result', index=False)
 
-count_df = pd.DataFrame(list(pt_occurrence_count.items()), columns=['PT', '出现次数'])
-with pd.ExcelWriter(os.path.join(base_path,'PT汇总结果.xlsx'), engine='openpyxl', mode='a') as writer:
-    count_df.to_excel(writer, sheet_name='PT出现次数统计', index=False)
+count_df = pd.DataFrame(list(pt_occurrence_count.items()), columns=['PT', 'occurrence number'])
+with pd.ExcelWriter(os.path.join(base_path,'PTsummarized result.xlsx'), engine='openpyxl', mode='a') as writer:
+    count_df.to_excel(writer, sheet_name='PToccurrence number statistics', index=False)
 
-print(f"\n共匹配成功了 {len(matched_pt_set)} 条数据。")
-print("结果已保存在汇总结果.xlsx中。")
+print(f"\n overall match successfully {len(matched_pt_set)} data")
+print("resultsave as summarized result.xlsx")
 
 
 
-def 处理Excel文件(file_path, english_soc_dict, matched_soc_set, soc_occurrence_count, matched_soc_list):
+def handle Excel file(file_path, english_soc_dict, matched_soc_set, soc_occurrence_count, matched_soc_list):
     df_dake = pd.read_excel(file_path, engine='openpyxl')
-    print(f"处理文件：{file_path}")
+    print(f"handle file：{file_path}")
 
     for index, row in df_dake.iterrows():
         reaction = row['reactionmeddrapt']
-        print(f"处理第 {index + 1} 行，不良反应：{reaction}")
+        print(f"handle the {index + 1} line，adverse reaction：{reaction}")
 
 
         if '[' not in reaction and ']' not in reaction:
@@ -423,14 +423,14 @@ def 处理Excel文件(file_path, english_soc_dict, matched_soc_set, soc_occurren
         for r in reaction_cleaned:
             if r in english_soc_dict:
                 matched_soc = english_soc_dict[r]
-                添加匹配的SOC(matched_soc, matched_soc_set, soc_occurrence_count, matched_soc_list, matched_soc_row)
+                add matchedSOC(matched_soc, matched_soc_set, soc_occurrence_count, matched_soc_list, matched_soc_row)
             else:
-                print(f"未找到匹配项：{r}")
+                print(f"no match was found：{r}")
 
 
-def 添加匹配的SOC(soc, matched_soc_set, soc_occurrence_count, matched_soc_list, matched_soc_row):
+def add matchedSOC(soc, matched_soc_set, soc_occurrence_count, matched_soc_list, matched_soc_row):
     if soc not in matched_soc_set:
-        print(f"匹配成功：{soc}")
+        print(f"match successfully：{soc}")
         matched_soc_set.add(soc)
 
     if soc not in matched_soc_row:
@@ -442,7 +442,7 @@ def 添加匹配的SOC(soc, matched_soc_set, soc_occurrence_count, matched_soc_l
             matched_soc_list.append(soc)
 
 
-df_soc = pd.read_excel(os.path.join(base_path,'SOC匹配.xlsx'))
+df_soc = pd.read_excel(os.path.join(base_path,'SOCmatch.xlsx'))
 english_soc_dict = {}
 for _, row in df_soc.iterrows():
     english = row['English']
@@ -456,22 +456,22 @@ soc_occurrence_count = {}
 matched_soc_list = []
 
 
-folder_path = os.path.join(base_path,"源文件")
+folder_path = os.path.join(base_path,"source file")
 for root, _, files in os.walk(folder_path):
     for file in files:
-        if file.endswith('.xlsx') and file != 'SOC匹配.xlsx':
+        if file.endswith('.xlsx') and file != 'SOCmatch.xlsx':
             file_path = os.path.join(root, file)
-            处理Excel文件(file_path, english_soc_dict, matched_soc_set, soc_occurrence_count, matched_soc_list)
+            handle Excel file(file_path, english_soc_dict, matched_soc_set, soc_occurrence_count, matched_soc_list)
 
 
-result_df = pd.DataFrame({'匹配成功的SOC': list(matched_soc_set)})
-with pd.ExcelWriter(os.path.join(base_path, f'{original_word}-SOC汇总结果.xlsx'), engine='openpyxl') as writer:
-    result_df.to_excel(writer, sheet_name='匹配结果', index=False)
+result_df = pd.DataFrame({'match successfully SOC': list(matched_soc_set)})
+with pd.ExcelWriter(os.path.join(base_path, f'{original_word}-SOCsummarized result.xlsx'), engine='openpyxl') as writer:
+    result_df.to_excel(writer, sheet_name='match result', index=False)
 
 
-count_df = pd.DataFrame(list(soc_occurrence_count.items()), columns=['SOC', '出现次数'])
-with pd.ExcelWriter(os.path.join(base_path, f'{original_word}-SOC汇总结果.xlsx'), engine='openpyxl', mode='a') as writer:
-    count_df.to_excel(writer, sheet_name='SOC出现次数统计', index=False)
+count_df = pd.DataFrame(list(soc_occurrence_count.items()), columns=['SOC', 'occurrence number'])
+with pd.ExcelWriter(os.path.join(base_path, f'{original_word}-SOCsummarized result.xlsx'), engine='openpyxl', mode='a') as writer:
+    count_df.to_excel(writer, sheet_name='SOCoccurrence number statistics', index=False)
 
 
 
@@ -482,7 +482,7 @@ with pd.ExcelWriter(os.path.join(base_path, f'{original_word}-SOC汇总结果.xl
 
 input_file_path = new_output_file_path
 
-output_file_path = os.path.join(new_directory,f'{original_word}-部分临床特征统计.xlsx')
+output_file_path = os.path.join(new_directory,f'{original_word}-some clinical featuresstatistics.xlsx')
 
 
 df = pd.read_excel(input_file_path)
@@ -556,4 +556,3 @@ if 'Sheet' in wb.sheetnames:
 wb.save(output_file_path)
 
 print(f"Counted data has been saved to '{output_file_path}'.")
-
